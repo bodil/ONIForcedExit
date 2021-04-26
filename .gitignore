@@ -1,0 +1,5 @@
+*.dll
+*.pdb
+/lib/
+/Source/obj/
+/Public/config.json

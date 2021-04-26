@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <PropertyGroup>
+        <PackageId>bodilpwnz.ONIForcedExit</PackageId>
+        <AssemblyTitle>Forced Quit</AssemblyTitle>
+        <Version>1.0.0</Version>
+        <Authors>Bodil Stokke</Authors>
+        <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
+
+        <OutputType>Library</OutputType>
+        <LangVersion>9.0</LangVersion>
+        <Nullable>enable</Nullable>
+        <TargetFramework>net40</TargetFramework>
+        <OutputPath>..\Public</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <!-- <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies> -->
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="PLib" Version="3.13.1" />
+        <Reference Include="0Harmony">
+            <HintPath>..\lib\0Harmony.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Assembly-CSharp">
+            <HintPath>..\lib\Assembly-CSharp.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Assembly-CSharp-firstpass">
+            <HintPath>..\lib\Assembly-CSharp-firstpass.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine">
+            <HintPath>..\lib\UnityEngine.CoreModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Newtonsoft.Json">
+            <HintPath>..\lib\Newtonsoft.Json.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+    </ItemGroup>
+
+</Project>
