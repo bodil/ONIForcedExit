@@ -64,9 +64,6 @@ namespace ONIForcedExit
         {
             Game.Instance.gameObject.SetActive(false);
 
-            // var dialog = (ConfirmDialogScreen)GameScreenManager.Instance.StartScreen(ScreenPrefabs.Instance.ConfirmDialogScreen.gameObject, Game.Instance.transform.parent.gameObject, GameScreenManager.UIRenderTarget.ScreenSpaceOverlay);
-            // dialog.PopupConfirmDialog(message, new System.Action(OnConfirm), new System.Action(OnConfirm), null, null, "Forced Exit", "Exit", "Exit");
-
             var dialog = new PDialog("Forced Exit")
             {
                 Title = "Forced Exit",
@@ -95,6 +92,7 @@ namespace ONIForcedExit
 
         public static void CheckForcedExit()
         {
+            PUtil.LogDebug("Game was saved; checking forced exit.");
             if (Options.Instance.ExitAfterMode)
             {
                 var exitTime = GameStarted.AddHours(Options.Instance.ExitAfter);
@@ -126,9 +124,8 @@ namespace ONIForcedExit
             }
         }
 
-        [HarmonyPatch(typeof(SaveLoader), "Save")]
-        [HarmonyPatch(new[] { typeof(string), typeof(bool), typeof(bool) })]
-        public static class SaveLoader_Save_Patch
+        [HarmonyPatch(typeof(Game), "Save")]
+        public static class Game_Save_Patch
         {
             public static void Postfix() => ForcedExit.CheckForcedExit();
         }
