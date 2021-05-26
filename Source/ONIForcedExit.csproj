@@ -16,26 +16,39 @@
         <!-- <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies> -->
     </PropertyGroup>
 
+    <!-- Point `$env:ONI_MANAGED_PATH` at `<ONI>\OxygenNotIncluded_DATA\Managed\` -->
     <ItemGroup>
-        <PackageReference Include="PLib" Version="3.13.1" />
+        <PackageReference Include="PLib" Version="3.14.0" />
         <Reference Include="0Harmony">
-            <HintPath>..\lib\0Harmony.dll</HintPath>
+            <HintPath>$(ONI_MANAGED_PATH)\0Harmony.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Assembly-CSharp">
-            <HintPath>..\lib\Assembly-CSharp.dll</HintPath>
+            <HintPath>$(ONI_MANAGED_PATH)\Assembly-CSharp.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Assembly-CSharp-firstpass">
-            <HintPath>..\lib\Assembly-CSharp-firstpass.dll</HintPath>
+            <HintPath>$(ONI_MANAGED_PATH)\Assembly-CSharp-firstpass.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine">
-            <HintPath>..\lib\UnityEngine.CoreModule.dll</HintPath>
+            <HintPath>$(ONI_MANAGED_PATH)\UnityEngine.CoreModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.UI">
+            <HintPath>$(ONI_MANAGED_PATH)\UnityEngine.UI.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.TextRenderingModule">
+            <HintPath>$(ONI_MANAGED_PATH)\UnityEngine.TextRenderingModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Unity.TextMeshPro">
+            <HintPath>$(ONI_MANAGED_PATH)\Unity.TextMeshPro.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Newtonsoft.Json">
-            <HintPath>..\lib\Newtonsoft.Json.dll</HintPath>
+            <HintPath>$(ONI_MANAGED_PATH)\Newtonsoft.Json.dll</HintPath>
             <Private>False</Private>
         </Reference>
     </ItemGroup>
