@@ -9,7 +9,7 @@ If you have ever played ONI, you'll know why I needed this mod.
 Install it from the Steam workshop:
 [Forced Exit](https://steamcommunity.com/sharedfiles/filedetails/?id=2468928092)
 
-![](Public/preview.png?raw=true)
+![](preview.png?raw=true)
 
 ## Licence
 
