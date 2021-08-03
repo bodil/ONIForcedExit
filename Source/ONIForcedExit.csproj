@@ -10,7 +10,7 @@
         <OutputType>Library</OutputType>
         <LangVersion>9.0</LangVersion>
         <Nullable>enable</Nullable>
-        <TargetFramework>net40</TargetFramework>
+        <TargetFramework>net471</TargetFramework>
         <OutputPath>..\Public</OutputPath>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <!-- <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies> -->
@@ -18,7 +18,7 @@
 
     <!-- Point `$env:ONI_MANAGED_PATH` at `<ONI>\OxygenNotIncluded_DATA\Managed\` -->
     <ItemGroup>
-        <PackageReference Include="PLib" Version="3.14.0" />
+        <PackageReference Include="PLib" Version="4.4.0" />
         <Reference Include="0Harmony">
             <HintPath>$(ONI_MANAGED_PATH)\0Harmony.dll</HintPath>
             <Private>False</Private>

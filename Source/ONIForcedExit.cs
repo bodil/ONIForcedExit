@@ -2,9 +2,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-using Harmony;
+using HarmonyLib;
 using Newtonsoft.Json;
-using PeterHan.PLib;
+using PeterHan.PLib.Core;
 using PeterHan.PLib.Options;
 using PeterHan.PLib.UI;
 using UnityEngine;
@@ -13,7 +13,7 @@ namespace ONIForcedExit
 {
     [ModInfo("Forced Exit")]
     [JsonObject(MemberSerialization.OptIn)]
-    public sealed class Options : POptions.SingletonOptions<Options>
+    public sealed class Options
     {
         [Option("Exit after (enable)", "When enabled, exit after a certain number of hours played.")]
         [JsonProperty]
@@ -70,8 +70,33 @@ namespace ONIForcedExit
         };
     }
 
-    public class ForcedExit
+    public class ForcedExit : KMod.UserMod2
     {
+        private static Options? options;
+        public static Options Options
+        {
+            get
+            {
+                if (options == null)
+                {
+                    options = POptions.ReadSettings<Options>() ?? new Options();
+                }
+                return options;
+            }
+            set
+            {
+                options = value;
+            }
+        }
+
+        public override void OnLoad(Harmony harmony)
+        {
+            base.OnLoad(harmony);
+            PUtil.InitLibrary();
+            Options = POptions.ReadSettings<Options>() ?? new Options();
+            new POptions().RegisterOptions(this, typeof(Options));
+        }
+
         public static System.DateTime GameStarted = System.DateTime.Now;
 
         public static void ExitNow(string message)
@@ -121,20 +146,20 @@ namespace ONIForcedExit
         public static void CheckForcedExit()
         {
             PUtil.LogDebug("Game was saved; checking forced exit.");
-            if (Options.Instance.ExitAfterMode)
+            if (ForcedExit.Options.ExitAfterMode)
             {
-                var exitTime = GameStarted.AddHours(Options.Instance.ExitAfter);
+                var exitTime = GameStarted.AddHours(ForcedExit.Options.ExitAfter);
                 if (System.DateTime.Now > exitTime)
                 {
-                    Game.Instance.StartDelayed(10, () => ExitNow($"You have played for {Options.Instance.ExitAfter} hours."));
+                    Game.Instance.StartDelayed(10, () => ExitNow($"You have played for {ForcedExit.Options.ExitAfter} hours."));
                     return;
                 }
             }
-            if (Options.Instance.ExitAtMode)
+            if (ForcedExit.Options.ExitAtMode)
             {
-                if (System.DateTime.Now.Hour == Options.Instance.ExitAt)
+                if (System.DateTime.Now.Hour == ForcedExit.Options.ExitAt)
                 {
-                    var currentTime = Options.Instance.RenderTime(System.DateTime.Now);
+                    var currentTime = ForcedExit.Options.RenderTime(System.DateTime.Now);
                     Game.Instance.StartDelayed(10, () => ExitNow($"It is now {currentTime}."));
                     return;
                 }
@@ -165,7 +190,7 @@ namespace ONIForcedExit
         public override GameObject Build()
         {
             var label = PUIElements.CreateUI(null, base.Name);
-            text = PTextComponent.TextChildHelper(label, PUITuning.Fonts.UILightStyle, Options.Instance.RenderTime(System.DateTime.Now));
+            text = PTextComponent.TextChildHelper(label, PUITuning.Fonts.UILightStyle, ForcedExit.Options.RenderTime(System.DateTime.Now));
             tooltip = EntityTemplateExtensions.AddOrGet<ToolTip>(label);
             tooltip.OnToolTip = OnToolTip;
             label.SetActive(true);
@@ -184,7 +209,7 @@ namespace ONIForcedExit
         {
             if (text is not null)
             {
-                text.text = Options.Instance.RenderTime(System.DateTime.Now);
+                text.text = ForcedExit.Options.RenderTime(System.DateTime.Now);
             }
         }
 
@@ -195,18 +220,18 @@ namespace ONIForcedExit
                 tooltip.ClearMultiStringTooltip();
 
                 var timePlayed = System.DateTime.Now - ForcedExit.GameStarted;
-                if (Options.Instance.ExitAfterMode)
+                if (ForcedExit.Options.ExitAfterMode)
                 {
-                    var exitTime = ForcedExit.GameStarted.AddHours(Options.Instance.ExitAfter);
-                    tooltip.AddMultiStringTooltip($"You have been playing for <color=#F0B310FF>{timePlayed.Hours}</color> of <color=#F0B310FF>{Options.Instance.ExitAfter}</color> hours.", PUITuning.Fonts.TextLightStyle);
+                    var exitTime = ForcedExit.GameStarted.AddHours(ForcedExit.Options.ExitAfter);
+                    tooltip.AddMultiStringTooltip($"You have been playing for <color=#F0B310FF>{timePlayed.Hours}</color> of <color=#F0B310FF>{ForcedExit.Options.ExitAfter}</color> hours.", PUITuning.Fonts.TextLightStyle);
                 }
                 else
                 {
                     tooltip.AddMultiStringTooltip($"You have been playing for <color=#F0B310FF>{timePlayed.Hours}</color> hours.", PUITuning.Fonts.TextLightStyle);
                 }
-                if (Options.Instance.ExitAtMode)
+                if (ForcedExit.Options.ExitAtMode)
                 {
-                    var exitTime = Options.Instance.RenderTime(System.DateTime.Today.AddHours(Options.Instance.ExitAt));
+                    var exitTime = ForcedExit.Options.RenderTime(System.DateTime.Today.AddHours(ForcedExit.Options.ExitAt));
                     tooltip.AddMultiStringTooltip($"Your game will exit at <color=#F0B310FF>{exitTime}</color>.", PUITuning.Fonts.TextLightStyle);
                 }
             }
@@ -216,24 +241,6 @@ namespace ONIForcedExit
 
     public class Patches
     {
-        public static class Mod_OnLoad
-        {
-            public static void OnLoad()
-            {
-                PUtil.InitLibrary();
-                POptions.RegisterOptions(typeof(Options));
-
-                foreach (var img in Resources.FindObjectsOfTypeAll<Sprite>())
-                {
-                    var name = img?.name?.ToLower();
-                    if (name is not null)
-                    {
-                        if (name.Contains("schedule") || name.Contains("time") || name.Contains("clock")) PUtil.LogDebug($"Sprite: {name}");
-                    }
-                }
-            }
-        }
-
         [HarmonyPatch(typeof(Game), "Save")]
         public static class Game_Save_Patch
         {
@@ -245,7 +252,7 @@ namespace ONIForcedExit
         {
             public static void Postfix(MeterScreen __instance)
             {
-                if (Options.Instance.IngameClock)
+                if (ForcedExit.Options.IngameClock)
                 {
                     Clock.Instantiate(__instance);
                 }
@@ -257,7 +264,7 @@ namespace ONIForcedExit
         {
             public static void Postfix()
             {
-                if (Options.Instance.IngameClock)
+                if (ForcedExit.Options.IngameClock)
                 {
                     Clock.DestroyInstance();
                 }
@@ -269,7 +276,7 @@ namespace ONIForcedExit
         {
             public static void Postfix()
             {
-                if (Options.Instance.IngameClock)
+                if (ForcedExit.Options.IngameClock)
                 {
                     Clock.Instance?.Update();
                 }
